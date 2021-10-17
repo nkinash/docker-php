@@ -1,0 +1,49 @@
+version: '3'
+
+services:
+  nginx:
+    image: nginx:alpine
+    ports:
+      - 80:80
+    volumes:
+      - ./src:/var/www
+      - ./images/nginx/nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - backend
+
+
+  postgres:
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    env_file:
+      - ./docker.env
+    volumes:
+      - pgsql_data:/var/lib/postgresql/data
+
+
+  backend:
+    image: php:fpm
+    container_name: backend
+    build:
+      context: ./src
+    volumes:
+      - ./src:/var/www
+    working_dir: /var/www
+    environment:
+      PHP_INI_SCAN_DIR: /usr/local/etc/php/custom.d:/usr/local/etc/php/conf.d
+    depends_on:
+      - postgres
+
+#  cron:
+#    image: php:fpm
+#    restart: always
+#    volumes:
+#      - ./src:/var/www
+#    links:
+#      - backend
+#    command: 'sh var/www/run_cron.sh'
+
+volumes:
+  pgsql_data:
+    external: true
