@@ -35,15 +35,6 @@ services:
     depends_on:
       - postgres
 
-#  cron:
-#    image: php:fpm
-#    restart: always
-#    volumes:
-#      - ./src:/var/www
-#    links:
-#      - backend
-#    command: 'sh var/www/run_cron.sh'
-
 volumes:
   pgsql_data:
     external: true
